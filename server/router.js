@@ -1,19 +1,29 @@
-import { serveFile } from "https://deno.land/std/http/file_server.ts";
-import { jsonResponse, textResponse } from "./response.js";
+import { serveFile } from "https://deno.land/std@0.201.0/http/file_server.ts";
+import { jsonResponse, textResponse } from "./utils.js";
 
 export async function routeRequest(req) {
-    const url = new URL(req.url);
+  const url = new URL(req.url);
 
-    // API routes
-    if (url.pathname.startsWith("/api/hello")) {
-        const { helloMessage } = await import("../api/hello.js");
-        return jsonResponse({ message: helloMessage() });
-    }
+  // API routes
+  if (url.pathname.startsWith("/api/hello")) {
+    return jsonResponse({ message: "Hello from API!" });
+  }
 
-    // Static files
+  if (url.pathname.startsWith("/api/ip")) {
     try {
-        return await serveFile(req, `public${url.pathname === "/" ? "/index.html" : url.pathname}`);
+      const res = await fetch("https://api.ipify.org?format=json");
+      const ip = await res.json();
+      return jsonResponse(ip);
     } catch {
-        return textResponse("404 Not Found", 404);
+      return jsonResponse({ error: "Failed to get IP" }, 500);
     }
+  }
+
+  // Static files
+  try {
+    const path = url.pathname === "/" ? "/index.html" : url.pathname;
+    return await serveFile(req, `public${path}`);
+  } catch {
+    return textResponse("404 Not Found", 404);
+  }
 }

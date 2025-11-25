@@ -1,0 +1,13 @@
+{
+  "name": "my-js-webserver",
+  "version": "1.0.0",
+  "description": "Lightweight JavaScript web server (Deno)",
+  "main": "server/main.js",
+  "scripts": {
+    "start": "deno run --allow-net --allow-read server/main.js",
+    "lint": "deno lint",
+    "test": "deno test -A"
+  },
+  "author": "attendance1978-wq",
+  "license": "MIT"
+}
